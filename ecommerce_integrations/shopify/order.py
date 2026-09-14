@@ -152,10 +152,16 @@ def get_order_items(order_items, setting, delivery_date, taxes_inclusive):
 		if all_product_exists:
 			item_code = get_item_code(shopify_item)
 			rate = _get_item_price(shopify_item, taxes_inclusive)
+
+			item_name = (
+				frappe.db.get_value("Item", item_code, "item_name")
+				or (shopify_item.get("name") or "")[:140]
+			)
+
 			items.append(
 				{
 					"item_code": item_code,
-					"item_name": shopify_item.get("name"),
+					"item_name": item_name,
 					"rate": rate,
 					# a fully discounted line nets to 0; flag it free so ERPNext keeps
 					# the rate at 0 instead of back-filling it from the price list
